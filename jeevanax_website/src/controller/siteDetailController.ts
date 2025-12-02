@@ -4,6 +4,17 @@ import { PropertyService } from "../services/siteDetailService";
 const service = new PropertyService();
 
 export class PropertyController {
+    async bulkUpload(req: Request, res: Response): Promise<Response> {
+      try {
+          const projectDetails = req.body; // assuming body contains array of users
+        const data = await service.bulkUploadProperty(projectDetails);
+        return res.status(200).json({ success: true, data });
+      } catch (error) {
+        console.error("Bulk Upload Error:", error);
+        return res.status(500).json({ success: false, message: "Bulk upload failed", error });
+      }
+    }
+
   async create(req: Request, res: Response) {
     try {
       // Cloudinary URLs come in as file.path

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import { version } from "os";
 
 export interface IProperty extends Document {
-  siteName: string;
+  sitename: string;
   ownername: string;
   type: string;
   utilities: string;
@@ -21,7 +21,7 @@ export interface IProperty extends Document {
 
 const PropertySchema: Schema = new Schema(
   {
-    siteName: { type: String, required: true },
+    sitename: { type: String, required: true },
     ownername: { type: String },
     type: { type: String },
     utilities: { type: String },

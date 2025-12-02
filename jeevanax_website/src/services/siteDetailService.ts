@@ -23,4 +23,7 @@ export class PropertyService {
   async deleteProperty(id: string): Promise<IProperty | null> {
     return repo.delete(id);
   }
+  async bulkUploadProperty(projectDetails: any): Promise<{}> {
+    return repo.bulkUpload(projectDetails);  
+  }
 }
