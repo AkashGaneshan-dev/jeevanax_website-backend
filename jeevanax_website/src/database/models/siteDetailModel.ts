@@ -17,6 +17,9 @@ export interface IProperty extends Document {
   bedrooms: string;
   bathrooms: string;
   services: string;
+  homeflag: boolean;
+  contactflag: boolean;
+  testimonial: string;
 }
 
 const PropertySchema: Schema = new Schema(
@@ -36,6 +39,9 @@ const PropertySchema: Schema = new Schema(
     bedrooms: { type: String },
     bathrooms: { type: String },
     services: { type: String },
+    homeflag: { type: Boolean, default: false },
+    contactflag: { type: Boolean, default: false },
+    testimonial: { type: String }
   },
   { timestamps: true,
      versionKey: false
