@@ -6,8 +6,8 @@ const service = new PropertyService();
 export class PropertyController {
     async bulkUpload(req: Request, res: Response): Promise<Response> {
       try {
-          const projectDetails = req.body; // assuming body contains array of users
-        const data = await service.bulkUploadProperty(projectDetails);
+          const projectDetails = req.body;
+          const data = await service.bulkUploadProperty(projectDetails, req.files as Express.Multer.File[]);
         return res.status(200).json({ success: true, data });
       } catch (error) {
         console.error("Bulk Upload Error:", error);
@@ -15,24 +15,22 @@ export class PropertyController {
       }
     }
 
-  async create(req: Request, res: Response) {
-    try {
-      // Cloudinary URLs come in as file.path
-      const imageUrls = req.files
-        ? (req.files as Express.Multer.File[]).map(file => file.path)
-        : [];
+    async create(req: Request, res: Response) {
+        try {
+            const property = await service.createProperty(
+                req.body,
+                req.files as Express.Multer.File[]
+            );
 
-      const data = { ...req.body, images: imageUrls };
-      const property = await service.createProperty(data);
-
-      res.status(201).json({
-        message: "Property created successfully",
-        property
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+            res.status(201).json({
+                message: "Property created successfully",
+                property
+            });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
     }
-  }
+    
 
   async getAll(req: Request, res: Response) {
     try {

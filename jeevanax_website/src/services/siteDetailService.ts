@@ -4,8 +4,8 @@ import { IProperty } from "../database/models/siteDetailModel";
 const repo = new PropertyRepository();
 
 export class PropertyService {
-  async createProperty(data: Partial<IProperty>): Promise<IProperty> {
-    return repo.create(data);
+    async createProperty(data: Partial<IProperty>, files: Express.Multer.File[]): Promise<IProperty> {
+        return repo.create(data, files);
   }
 
   async getAllProperties(): Promise<IProperty[]> {
@@ -22,8 +22,8 @@ export class PropertyService {
 
   async deleteProperty(id: string): Promise<IProperty | null> {
     return repo.delete(id);
-  }
-  async bulkUploadProperty(projectDetails: any): Promise<{}> {
-    return repo.bulkUpload(projectDetails);  
+    }
+    async bulkUploadProperty(projectDetails: any, files: Express.Multer.File[]): Promise<{}> {
+        return repo.bulkUpload(projectDetails, files);  
   }
 }

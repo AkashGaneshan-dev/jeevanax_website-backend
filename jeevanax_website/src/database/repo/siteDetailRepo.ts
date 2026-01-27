@@ -1,9 +1,34 @@
 import Property, { IProperty } from "../models/siteDetailModel";
+import imageUploader from "../../middleware/cloudinaryUpload";
+
+const imageuploader = new imageUploader();
 
 export class PropertyRepository {
-  async create(data: Partial<IProperty>): Promise<IProperty> {
-    return await Property.create(data);
-  }
+    async create( data: Partial<IProperty>, files?: Express.Multer.File[] ): Promise<IProperty> {
+
+        let imageUrls: string[] = [];
+
+        if (files && files.length > 0) {
+            const uploadResults = await Promise.all(
+                files.map(file =>
+                    imageuploader.uploadToImageKit(
+                        file.buffer,
+                        file.originalname,
+                        "jeevanax-sites"
+                    )
+                )
+            );
+
+            imageUrls = uploadResults.map((result: { url: any; }) => result.url);
+        }
+
+        const propertyData = {
+            ...data,
+            images: imageUrls
+        };
+
+        return await Property.create(propertyData);
+    }
 
   async findAll(): Promise<IProperty[]> {
     return await Property.find();
@@ -21,26 +46,27 @@ export class PropertyRepository {
     return await Property.findByIdAndDelete(id);
   }
 
-  async bulkUpload(projectDetails: IProperty[]): Promise<{}> {
-        try {
-            const data = await Property.insertMany(projectDetails, { ordered: false, rawResult: true });
-            return data;
-        }
-        catch (err: any) {
-            console.error('Bulk upload failed. name:', err?.name, 'message:', err?.message);
-            // Bulk write errors
-            if (err?.writeErrors) {
-                console.error('writeErrors:', err.writeErrors.map((e: any) => ({
-                    index: e.index,
-                    code: e.code,
-                    errmsg: e.errmsg
-                })));
-            }
-            // Mongo duplicate key
-            if (err?.code === 11000) {
-                console.error('Duplicate key error detail:', err.keyValue);
-            }
-            throw err;
-        }
+    async bulkUpload( reqBody: IProperty[], files: Express.Multer.File[] = [] ) {
+        // 1. Upload all images first
+        const uploadedImages = await Promise.all(
+            files.map(file =>
+                imageuploader.uploadToImageKit(
+                    file.buffer,
+                    file.originalname,
+                    "jeevanax-sites"
+                )
+            )
+        );
+
+        // 2. Build documents properly
+        const documents = reqBody.map(site => ({
+            ...site,
+            images: uploadedImages
+        }));
+
+        // 3. Insert as array
+        return await Property.insertMany(documents, {
+            ordered: false
+        });
     }
 }
