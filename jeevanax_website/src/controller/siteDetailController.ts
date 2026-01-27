@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { PropertyService } from "../services/siteDetailService";
+import Mailer from "../middleware/Mailer";
 
 const service = new PropertyService();
+const mailer = new Mailer();
 
 export class PropertyController {
     async bulkUpload(req: Request, res: Response): Promise<Response> {
@@ -80,5 +82,15 @@ export class PropertyController {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-  }
+    }
+
+    async sendAnMail(req: Request, res: Response) {
+        try {
+            const { email, subject, name, message, phone } = req.body;
+            mailer.MailAnOrder(email, name, phone, subject, message);
+            res.status(200).json({ message: "Mail sent successfully" });
+        } catch (error: any) {
+            res.status(500).json({ message: error.message });
+        }
+    }
 }

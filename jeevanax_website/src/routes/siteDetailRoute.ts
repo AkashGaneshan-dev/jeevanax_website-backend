@@ -12,5 +12,6 @@ router.post("/getById", controller.getById.bind(controller));
 router.post("/update", upload.any(), controller.update.bind(controller));
 router.post("/delete", controller.delete.bind(controller));
 router.post("/bulk-upload", upload.array("images"), controller.bulkUpload.bind(controller));
+router.post("/send-mail", controller.sendAnMail.bind(controller));
 
 export default router;

@@ -1,17 +1,26 @@
 import ImageKit from "imagekit";
 import multer from "multer";
+import 'dotenv/config'; 
 
 export default class ImageKitUpload {
     imagekit: ImageKit;
     upload;
 
+    requireEnv(name: string): string {
+    const value = process.env[name];
+    if (!value) {
+        throw new Error(`Missing environment variable: ${name}`);
+        }
+        return value;
+    }
+
     constructor() {
         this.upload = multer({ storage: multer.memoryStorage() });
 
         this.imagekit = new ImageKit({
-            publicKey: "public_Vy/KO5nnDuYlqKeLcRoD6u0utGI=",
-            privateKey: "private_lrQrmwSZyKLtX1ZWDXiy7ygzgzs=",
-            urlEndpoint: "https://ik.imagekit.io/4qvhyi3iy"
+            publicKey: this.requireEnv('IMAGEKIT_PUBLIC_KEY'),
+            privateKey: this.requireEnv('IMAGEKIT_PRIVATE_KEY'),
+            urlEndpoint: this.requireEnv('IMAGEKIT_URL_ENDPOINT'),
         });
     }
 
